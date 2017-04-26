@@ -7,10 +7,10 @@ RMC - 房屋抵押贷款计算器[等额本金/等额本息]，目前实现计�
 ## 捐助
 <!--https://raw.githubusercontent.com/SpencerZhang/ExecOSCommand-->
 <p align="center">
-<img src="https://github.com/SpencerZhang/RoomMortgageCalculator/resource/IMG_0783.JPG" alt="WeChat" title="WeChat" width="200"/>
+<img src="https://github.com/SpencerZhang/resource/IMG_0783.JPG" alt="WeChat" title="WeChat" width="200"/>
 </p>
 <p align="center">
-<img src="https://github.com/SpencerZhang/RoomMortgageCalculator/resource/IMG_0784.JPG" alt="AliPay" title="AliPay" width="200"/>
+<img src="https://github.com/SpencerZhang/resource/IMG_0784.JPG" alt="AliPay" title="AliPay" width="200"/>
 </p>
 
 
