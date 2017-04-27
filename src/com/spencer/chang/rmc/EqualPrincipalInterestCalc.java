@@ -74,9 +74,6 @@ public class EqualPrincipalInterestCalc {
 
 		ArrayList<RoomMortgageCashflow> al = new ArrayList<RoomMortgageCashflow>();
 		for (int i = 1; i <= totalMonth; i++) {
-			// 还款日期
-			String dueDate = DateUtil.getDate();
-
 			// 每月应还利息
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthAmount, monthRate, i);
 
@@ -103,7 +100,7 @@ public class EqualPrincipalInterestCalc {
 
 			// 创建计划还款现金流对象
 			RoomMortgageCashflow rmc = new RoomMortgageCashflow();
-			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i, dueDate,
+			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i,
 					dueMonthInterset, dueMonthAmount, rmc);
 		}
 		return al;
@@ -126,11 +123,14 @@ public class EqualPrincipalInterestCalc {
 	 */
 	private void setRMC(BigDecimal paidPrincipal, BigDecimal paidInterset, BigDecimal remainingPrincipal,
 			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<RoomMortgageCashflow> al, int i,
-			String dueDate, BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, RoomMortgageCashflow rmc) {
+			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, RoomMortgageCashflow rmc) {
+		// 还款日期
+		String dueDate = DateUtil.getDate();
 		if (i == 1)
 			rmc.setDueDate(dueDate);
 		else
-			rmc.setDueDate(DateUtil.addDays(DateUtil.getDate(dueDate), i - 1));
+			rmc.setDueDate(DateUtil.addMonths(DateUtil.getDate(dueDate), i - 1));
+
 		rmc.setDueMonthAmount(dueMonthAmount.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthInterset(dueMonthInterset.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthPrincipal(dueMonthPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
