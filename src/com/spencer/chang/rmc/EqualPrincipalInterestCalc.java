@@ -1,11 +1,11 @@
 package com.spencer.chang.rmc;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.spencer.chang.rm.RoomMortgage;
 import com.spencer.chang.rm.RoomMortgageCashflow;
+import com.spencer.chang.util.DateUtil;
 
 /**
  * 等额本息计算器
@@ -74,8 +74,9 @@ public class EqualPrincipalInterestCalc {
 
 		ArrayList<RoomMortgageCashflow> al = new ArrayList<RoomMortgageCashflow>();
 		for (int i = 1; i <= totalMonth; i++) {
-			// JDK8 新特性 直接返回 2017-04-24 还款日期
-			LocalDate dueDate = LocalDate.now();
+			// 还款日期
+			String dueDate = DateUtil.getDate();
+
 			// 每月应还利息
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthAmount, monthRate, i);
 
@@ -125,11 +126,11 @@ public class EqualPrincipalInterestCalc {
 	 */
 	private void setRMC(BigDecimal paidPrincipal, BigDecimal paidInterset, BigDecimal remainingPrincipal,
 			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<RoomMortgageCashflow> al, int i,
-			LocalDate dueDate, BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, RoomMortgageCashflow rmc) {
+			String dueDate, BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, RoomMortgageCashflow rmc) {
 		if (i == 1)
 			rmc.setDueDate(dueDate);
 		else
-			rmc.setDueDate(dueDate.plusMonths(i - 1));
+			rmc.setDueDate(DateUtil.addDays(DateUtil.getDate(dueDate), i - 1));
 		rmc.setDueMonthAmount(dueMonthAmount.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthInterset(dueMonthInterset.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthPrincipal(dueMonthPrincipal.setScale(2, BigDecimal.ROUND_DOWN));

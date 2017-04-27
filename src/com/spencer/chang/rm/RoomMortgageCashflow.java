@@ -2,7 +2,6 @@ package com.spencer.chang.rm;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 /**
  * 房屋抵押贷款，计划还款现金流
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 public class RoomMortgageCashflow implements Serializable {
 	public static final long serialVersionUID = -5662814436004991372L;
 
-	public LocalDate dueDate;// 还款日期
+	public String dueDate;// 还款日期
 	public BigDecimal dueMonthAmount; // 还款额
 	public BigDecimal dueMonthPrincipal; // 还款本金
 	public BigDecimal dueMonthInterset; // 还款利息
@@ -22,11 +21,11 @@ public class RoomMortgageCashflow implements Serializable {
 	public BigDecimal remainingPrincipal; // 剩余本金
 	public BigDecimal paidAmount;// 已还款总额
 
-	public LocalDate getDueDate() {
+	public String getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(LocalDate dueDate) {
+	public void setDueDate(String dueDate) {
 		this.dueDate = dueDate;
 	}
 
