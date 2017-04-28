@@ -70,6 +70,17 @@ public class PlatformJavaVersion {
 	}
 
 	static int majorVersionFromJavaSpecificationVersion() {
+		//为什么传值java.specification.version，
+		//请看System.java -> getProperties()方法的注释内容
+		// public static Properties getProperties() {
+		// SecurityManager sm = getSecurityManager();
+		// if (sm != null) {
+		// sm.checkPropertiesAccess();
+		// }
+		//
+		// return props;
+		// }
+
 		return majorVersion(SystemPropertyUtil.get("java.specification.version", "1.6"));
 	}
 
