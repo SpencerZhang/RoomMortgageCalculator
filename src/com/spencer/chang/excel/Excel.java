@@ -2,6 +2,7 @@ package com.spencer.chang.excel;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -19,7 +20,7 @@ import com.spencer.chang.rm.RoomMortgageCashflow;
  *
  */
 public class Excel {
-	public void exportExcel(ArrayList<RoomMortgageCashflow> result, String pathName, String excelName) {
+	public void exportExcel(ArrayList<Optional<RoomMortgageCashflow>> result, String pathName, String excelName) {
 		// 创建一个webbook，对应一个Excel文件
 		HSSFWorkbook wb = new HSSFWorkbook();
 		// 在webbook中添加一个sheet
@@ -30,8 +31,8 @@ public class Excel {
 		HSSFCellStyle style = wb.createCellStyle();
 		// 居中格式
 		style.setAlignment(HorizontalAlignment.CENTER);
-		
-		//设置列名
+
+		// 设置列名
 		HSSFCell cell = row.createCell(0);
 		cell.setCellValue("还款日");
 		cell.setCellStyle(style);
@@ -56,19 +57,27 @@ public class Excel {
 		cell = row.createCell(7);
 		cell.setCellValue("已还金额");
 		cell.setCellStyle(style);
-		
-		//创建行列，并赋值
+
+		// 创建行列，并赋值
 		for (int i = 0; i < result.size(); i++) {
-			row = sheet.createRow(i + 1);
-			// 创建单元格，并设置值
-			row.createCell(0).setCellValue(result.get(i).getDueDate().toString());
-			row.createCell(1).setCellValue(result.get(i).getDueMonthAmount().doubleValue());
-			row.createCell(2).setCellValue(result.get(i).getDueMonthPrincipal().doubleValue());
-			row.createCell(3).setCellValue(result.get(i).getDueMonthInterset().doubleValue());
-			row.createCell(4).setCellValue(result.get(i).getPaidPrincipal().doubleValue());
-			row.createCell(5).setCellValue(result.get(i).getPaidInterset().doubleValue());
-			row.createCell(6).setCellValue(result.get(i).getRemainingPrincipal().doubleValue());
-			row.createCell(7).setCellValue(result.get(i).getPaidAmount().doubleValue());
+			//jdk 8 新特性 Optional
+			Optional<RoomMortgageCashflow> ormc = result.get(i);
+			//检查Optional类型对象是否有值
+			if (ormc.isPresent()) {
+				//获取对象
+				RoomMortgageCashflow rmc = ormc.get();
+				
+				row = sheet.createRow(i + 1);
+				// 创建单元格，并设置值
+				row.createCell(0).setCellValue(rmc.getDueDate());
+				row.createCell(1).setCellValue(rmc.getDueMonthAmount().doubleValue());
+				row.createCell(2).setCellValue(rmc.getDueMonthPrincipal().doubleValue());
+				row.createCell(3).setCellValue(rmc.getDueMonthInterset().doubleValue());
+				row.createCell(4).setCellValue(rmc.getPaidPrincipal().doubleValue());
+				row.createCell(5).setCellValue(rmc.getPaidInterset().doubleValue());
+				row.createCell(6).setCellValue(rmc.getRemainingPrincipal().doubleValue());
+				row.createCell(7).setCellValue(rmc.getPaidAmount().doubleValue());
+			}
 		}
 
 		// 生成excel文件

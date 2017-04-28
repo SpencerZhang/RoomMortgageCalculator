@@ -2,6 +2,7 @@ package com.spencer.chang.rmc;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.spencer.chang.rm.RoomMortgage;
 import com.spencer.chang.rm.RoomMortgageCashflow;
@@ -22,7 +23,7 @@ public class EqualPrincipalInterestCalc {
 	 *            抵押贷款信息
 	 * @return 计划还款现金流对象数组
 	 */
-	public ArrayList<RoomMortgageCashflow> getEqualPrincipal(RoomMortgage rm) {
+	public ArrayList<Optional<RoomMortgageCashflow>> getEqualPrincipalInterest(RoomMortgage rm) {
 		// 抵押贷款总额
 		BigDecimal mortgagePrincipal = rm.getMortgagePrincipal();
 		// 根据还款年数*12,求还款总月数
@@ -33,7 +34,8 @@ public class EqualPrincipalInterestCalc {
 		BigDecimal discountRate = rm.getDiscountRate();
 		// 年利率上浮
 		BigDecimal floatRate = rm.getFloatRate();
-		ArrayList<RoomMortgageCashflow> al = calc(mortgagePrincipal, totalMonth, rate, discountRate, floatRate);
+		ArrayList<Optional<RoomMortgageCashflow>> al = calc(mortgagePrincipal, totalMonth, rate, discountRate,
+				floatRate);
 		return al;
 	}
 
@@ -52,8 +54,8 @@ public class EqualPrincipalInterestCalc {
 	 *            上浮
 	 * @return 抵押贷款现金流数组
 	 */
-	private ArrayList<RoomMortgageCashflow> calc(BigDecimal mortgagePrincipal, int totalMonth, BigDecimal rate,
-			BigDecimal discountRate, BigDecimal floatRate) {
+	private ArrayList<Optional<RoomMortgageCashflow>> calc(BigDecimal mortgagePrincipal, int totalMonth,
+			BigDecimal rate, BigDecimal discountRate, BigDecimal floatRate) {
 		// 已还本金
 		BigDecimal paidPrincipal = BigDecimal.ZERO;
 		// 已还利息
@@ -72,7 +74,7 @@ public class EqualPrincipalInterestCalc {
 		// 已还款总额
 		BigDecimal paidAmount = BigDecimal.ZERO;
 
-		ArrayList<RoomMortgageCashflow> al = new ArrayList<RoomMortgageCashflow>();
+		ArrayList<Optional<RoomMortgageCashflow>> al = new ArrayList<Optional<RoomMortgageCashflow>>();
 		for (int i = 1; i <= totalMonth; i++) {
 			// 每月应还利息
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthAmount, monthRate, i);
@@ -98,10 +100,8 @@ public class EqualPrincipalInterestCalc {
 			// 已还款总额
 			paidAmount = paidAmount.add(dueMonthAmount);
 
-			// 创建计划还款现金流对象
-			RoomMortgageCashflow rmc = new RoomMortgageCashflow();
 			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i,
-					dueMonthInterset, dueMonthAmount, rmc);
+					dueMonthInterset, dueMonthAmount);
 		}
 		return al;
 	}
@@ -122,8 +122,11 @@ public class EqualPrincipalInterestCalc {
 	 * @param rmc
 	 */
 	private void setRMC(BigDecimal paidPrincipal, BigDecimal paidInterset, BigDecimal remainingPrincipal,
-			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<RoomMortgageCashflow> al, int i,
-			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, RoomMortgageCashflow rmc) {
+			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<Optional<RoomMortgageCashflow>> al, int i,
+			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount) {
+		// 创建计划还款现金流对象
+		RoomMortgageCashflow rmc = new RoomMortgageCashflow();
+
 		// 还款日期
 		String dueDate = DateUtil.getDate();
 		if (i == 1)
@@ -138,7 +141,9 @@ public class EqualPrincipalInterestCalc {
 		rmc.setPaidPrincipal(paidPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setRemainingPrincipal(remainingPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setPaidAmount(paidAmount.setScale(2, BigDecimal.ROUND_DOWN));
-		al.add(rmc);
+
+		Optional<RoomMortgageCashflow> or = Optional.of(rmc);
+		al.add(or);
 	}
 
 	/**
