@@ -23,21 +23,107 @@ import com.spencer.chang.rm.RoomMortgageCashflow;
  *
  */
 public class Excel {
+
+	/**
+	 * 导出excel文件
+	 * 
+	 * @param result
+	 * @param pathName
+	 * @param excelName
+	 * @param suffixName
+	 */
 	public void exportExcel(ArrayList<Optional<RoomMortgageCashflow>> result, String pathName, String excelName,
 			String suffixName) {
-		Workbook wb = null;
+		// 创建 Workbook
+		Workbook wb = createExcel(result, suffixName);
 
-		if (suffixName == "xls") {
-			// 创建一个webbook，对应一个Excel文件
-			wb = new HSSFWorkbook();
-		} else if (suffixName == "xlsx") {
-			// 创建一个webbook，对应一个Excel文件
-			wb = new XSSFWorkbook();
-		} else {
-			System.out.println("excel file name suffix is bad!");
-
+		// 生成excel文件
+		try {
+			String fileName = pathName + excelName + "." + suffixName;
+			FileOutputStream out = new FileOutputStream(fileName);
+			wb.write(out);
+			out.flush();
+			out.close();
+			wb.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * 创建excel文件
+	 * 
+	 * @param result
+	 * @param suffixName
+	 * @return
+	 */
+	private Workbook createExcel(ArrayList<Optional<RoomMortgageCashflow>> result, String suffixName) {
+		// 通过 suffixName 获取 WorkBook
+		Workbook wb = getWorkBook(suffixName);
+
+		// 创建 sheet
+		Sheet sheet = createSheet(wb);
+
+		// 创建结果值 行列 并赋值
+		createRowAndCellAndSetCellValue(result, sheet);
+
+		// 设置 sheet列的格式
+		setSheetColumnStyle(sheet);
+
+		return wb;
+	}
+
+	/**
+	 * 设置 sheet列的格式
+	 * 
+	 * @param sheet
+	 */
+	private void setSheetColumnStyle(Sheet sheet) {
+		// 设置自动列大小
+		for (short i = sheet.getRow(0).getFirstCellNum(), end = sheet.getRow(0).getLastCellNum(); i < end; i++) {
+			sheet.autoSizeColumn(i);
+		}
+	}
+
+	/**
+	 * 传入要导出的值，赋值给对应的行列
+	 * 
+	 * @param result
+	 * @param sheet
+	 */
+	private void createRowAndCellAndSetCellValue(ArrayList<Optional<RoomMortgageCashflow>> result, Sheet sheet) {
+		Row row;
+		// 创建行列，并赋值
+		for (int i = 0; i < result.size(); i++) {
+			// jdk 8 新特性 Optional
+			Optional<RoomMortgageCashflow> ormc = result.get(i);
+			// 检查Optional类型对象是否有值
+			if (ormc.isPresent()) {
+				// 获取对象
+				RoomMortgageCashflow rmc = ormc.get();
+
+				row = sheet.createRow((short) i + 1);
+				// 创建单元格，并设置值
+				row.createCell(0).setCellValue(rmc.getDueDate());
+				row.createCell(1).setCellValue(rmc.getDueMonthAmount().doubleValue());
+				row.createCell(2).setCellValue(rmc.getDueMonthPrincipal().doubleValue());
+				row.createCell(3).setCellValue(rmc.getDueMonthInterset().doubleValue());
+				row.createCell(4).setCellValue(rmc.getPaidPrincipal().doubleValue());
+				row.createCell(5).setCellValue(rmc.getPaidInterset().doubleValue());
+				row.createCell(6).setCellValue(rmc.getRemainingPrincipal().doubleValue());
+				row.createCell(7).setCellValue(rmc.getPaidAmount().doubleValue());
+			}
+		}
+	}
+
+	/**
+	 * 创建sheet
+	 * 
+	 * @param wb
+	 * @return
+	 */
+	private Sheet createSheet(Workbook wb) {
 		// 在webbook中添加一个sheet
 		String safeName = WorkbookUtil.createSafeSheetName("还款现金流");
 		Sheet sheet = wb.createSheet(safeName);
@@ -48,7 +134,19 @@ public class Excel {
 		CellStyle style = wb.createCellStyle();
 		// 居中格式
 		style.setAlignment(HorizontalAlignment.CENTER);
+		// 设置列名
+		setCellNameAndStyle(row, style);
 
+		return sheet;
+	}
+
+	/**
+	 * 设置列名
+	 * 
+	 * @param row
+	 * @param style
+	 */
+	private void setCellNameAndStyle(Row row, CellStyle style) {
 		// 设置列名
 		Cell cell = row.createCell(0);
 		cell.setCellValue("还款日");
@@ -74,44 +172,26 @@ public class Excel {
 		cell = row.createCell(7);
 		cell.setCellValue("已还金额");
 		cell.setCellStyle(style);
+	}
 
-		// 创建行列，并赋值
-		for (int i = 0; i < result.size(); i++) {
-			// jdk 8 新特性 Optional
-			Optional<RoomMortgageCashflow> ormc = result.get(i);
-			// 检查Optional类型对象是否有值
-			if (ormc.isPresent()) {
-				// 获取对象
-				RoomMortgageCashflow rmc = ormc.get();
+	/**
+	 * 根据传入的后缀名suffixName，创建webbook对象
+	 * 
+	 * @param suffixName
+	 * @return
+	 */
+	private Workbook getWorkBook(String suffixName) {
+		Workbook wb = null;
 
-				row = sheet.createRow((short) i + 1);
-				// 创建单元格，并设置值
-				row.createCell(0).setCellValue(rmc.getDueDate());
-				row.createCell(1).setCellValue(rmc.getDueMonthAmount().doubleValue());
-				row.createCell(2).setCellValue(rmc.getDueMonthPrincipal().doubleValue());
-				row.createCell(3).setCellValue(rmc.getDueMonthInterset().doubleValue());
-				row.createCell(4).setCellValue(rmc.getPaidPrincipal().doubleValue());
-				row.createCell(5).setCellValue(rmc.getPaidInterset().doubleValue());
-				row.createCell(6).setCellValue(rmc.getRemainingPrincipal().doubleValue());
-				row.createCell(7).setCellValue(rmc.getPaidAmount().doubleValue());
-			}
+		if (suffixName == "xls") {
+			// 创建一个webbook，对应一个Excel文件
+			wb = new HSSFWorkbook();
+		} else if (suffixName == "xlsx") {
+			// 创建一个webbook，对应一个Excel文件
+			wb = new XSSFWorkbook();
+		} else {
+			System.out.println("excel file name suffix is bad!");
 		}
-		// 设置自动列大小
-		for (short i = sheet.getRow(0).getFirstCellNum(), end = sheet.getRow(0).getLastCellNum(); i < end; i++) {
-			sheet.autoSizeColumn(i);
-		}
-
-		// 生成excel文件
-		try {
-			String fileName = pathName + excelName + "." + suffixName;
-			FileOutputStream out = new FileOutputStream(fileName);
-			wb.write(out);
-			out.flush();
-			out.close();
-			wb.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		return wb;
 	}
 }
