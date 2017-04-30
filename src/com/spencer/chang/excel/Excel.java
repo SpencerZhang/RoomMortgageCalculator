@@ -103,7 +103,8 @@ public class Excel {
 
 		// 生成excel文件
 		try {
-			FileOutputStream out = new FileOutputStream(pathName + excelName);
+			String fileName = pathName + excelName + "." + suffixName;
+			FileOutputStream out = new FileOutputStream(fileName);
 			wb.write(out);
 			out.flush();
 			out.close();

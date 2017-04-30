@@ -38,23 +38,21 @@ public class ExcelTest {
 		String pathName = "./";
 		// 等额本金
 		epcResult = epc.getEqualPrincipal(rm);
-		String epcExeclName = "等额本金.xls";
+		String epcExeclName = "等额本金";
 		String epcsuffixName = "xls";
 		excel.exportExcel(epcResult, pathName, epcExeclName, epcsuffixName);
 
+		String epcExeclName4xlsx = "等额本金";
+		String epcsuffixName4xlsx = "xlsx";
+		excel.exportExcel(epcResult, pathName, epcExeclName4xlsx, epcsuffixName4xlsx);
+		
 		// 等额本息
 		epicResult = epic.getEqualPrincipalInterest(rm);
-		String epicExeclName = "等额本息.xls";
+		String epicExeclName = "等额本息";
 		String epicsuffixName = "xls";
 		excel.exportExcel(epicResult, pathName, epicExeclName, epicsuffixName);
 
-		// 等额本金
-		String epcExeclName4xlsx = "等额本金.xlsx";
-		String epcsuffixName4xlsx = "xlsx";
-		excel.exportExcel(epcResult, pathName, epcExeclName4xlsx, epcsuffixName4xlsx);
-
-		// 等额本息
-		String epicExeclName4xlsx = "等额本息.xlsx";
+		String epicExeclName4xlsx = "等额本息";
 		String epicsuffixName4xlsx = "xlsx";
 		excel.exportExcel(epicResult, pathName, epicExeclName4xlsx, epicsuffixName4xlsx);
 	}
