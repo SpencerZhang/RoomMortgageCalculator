@@ -49,13 +49,11 @@ public class ExcelTest {
 		excel.exportExcel(epicResult, pathName, epicExeclName, epicsuffixName);
 
 		// 等额本金
-		epcResult = epc.getEqualPrincipal(rm);
 		String epcExeclName4xlsx = "等额本金.xlsx";
 		String epcsuffixName4xlsx = "xlsx";
 		excel.exportExcel(epcResult, pathName, epcExeclName4xlsx, epcsuffixName4xlsx);
 
 		// 等额本息
-		epicResult = epic.getEqualPrincipalInterest(rm);
 		String epicExeclName4xlsx = "等额本息.xlsx";
 		String epicsuffixName4xlsx = "xlsx";
 		excel.exportExcel(epicResult, pathName, epicExeclName4xlsx, epicsuffixName4xlsx);
