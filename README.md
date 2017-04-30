@@ -47,16 +47,30 @@ public class ExcelTest {
 		ArrayList<Optional<RoomMortgageCashflow>> epicResult = new ArrayList<Optional<RoomMortgageCashflow>>();
 		Excel excel = new Excel();
 		
+		String pathName = "./";
 		// 等额本金
 		epcResult = epc.getEqualPrincipal(rm);
-		String pathName = "./";
 		String epcExeclName = "等额本金.xls";
-		excel.exportExcel(epcResult, pathName, epcExeclName);
+		String epcsuffixName = "xls";
+		excel.exportExcel(epcResult, pathName, epcExeclName, epcsuffixName);
 
 		// 等额本息
 		epicResult = epic.getEqualPrincipalInterest(rm);
 		String epicExeclName = "等额本息.xls";
-		excel.exportExcel(epicResult, pathName, epicExeclName);
+		String epicsuffixName = "xls";
+		excel.exportExcel(epicResult, pathName, epicExeclName, epicsuffixName);
+
+		// 等额本金
+		epcResult = epc.getEqualPrincipal(rm);
+		String epcExeclName4xlsx = "等额本金.xlsx";
+		String epcsuffixName4xlsx = "xlsx";
+		excel.exportExcel(epcResult, pathName, epcExeclName4xlsx, epcsuffixName4xlsx);
+
+		// 等额本息
+		epicResult = epic.getEqualPrincipalInterest(rm);
+		String epicExeclName4xlsx = "等额本息.xlsx";
+		String epicsuffixName4xlsx = "xlsx";
+		excel.exportExcel(epicResult, pathName, epicExeclName4xlsx, epicsuffixName4xlsx);
 	}
 }
 ```
