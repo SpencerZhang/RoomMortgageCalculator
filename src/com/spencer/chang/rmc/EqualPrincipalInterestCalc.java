@@ -80,25 +80,27 @@ public class EqualPrincipalInterestCalc {
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthAmount, monthRate, i);
 
 			// 最后一个月的本金(倒减法)= 总金额-已还总金额
-			if (i == totalMonth)
+			if (i == totalMonth) {
 				dueMonthPrincipal = mortgagePrincipal.subtract(paidPrincipal);
+				// 最后一个月的剩余本金为0
+				remainingPrincipal = BigDecimal.ZERO;
+			}
 
 			// 每月应还本金
 			dueMonthPrincipal = dueMonthAmount.subtract(dueMonthInterset);
-			paidPrincipal = paidPrincipal.add(dueMonthPrincipal);
-
-			// 剩余本金 = 抵押贷款总额 - 已还本金
-			remainingPrincipal = mortgagePrincipal.subtract(paidPrincipal);
-			// 最后一个月的剩余本金为0
-			if (i == totalMonth)
-				remainingPrincipal = BigDecimal.ZERO;
-
-			paidInterset = paidInterset.add(dueMonthInterset);
 
 			// 每月还款额,保留2位小数
 			dueMonthAmount = dueMonthAmount.setScale(2, BigDecimal.ROUND_DOWN);
-			// 已还款总额
-			paidAmount = paidAmount.add(dueMonthAmount);
+
+			if (i > 1) {
+				paidPrincipal = paidPrincipal.add(dueMonthPrincipal);
+				if(i != totalMonth)
+					// 剩余本金 = 抵押贷款总额 - 已还本金
+					remainingPrincipal = mortgagePrincipal.subtract(paidPrincipal);
+				// 已还款总额
+				paidAmount = paidAmount.add(dueMonthAmount);
+				paidInterset = paidInterset.add(dueMonthInterset);
+			}
 
 			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i,
 					dueMonthInterset, dueMonthAmount);

@@ -2,6 +2,7 @@ package com.spencer.chang.excel;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -11,6 +12,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,15 +29,18 @@ public class Excel {
 	/**
 	 * 导出excel文件
 	 * 
-	 * @param result
+	 * @param sheetData
 	 * @param pathName
 	 * @param excelName
 	 * @param suffixName
+	 * @param sheetName
+	 * @param columnName
 	 */
-	public void exportExcel(ArrayList<Optional<RoomMortgageCashflow>> result, String pathName, String excelName,
-			String suffixName) {
+	public void exportExcel(HashMap<String, ArrayList<Optional<RoomMortgageCashflow>>> sheetData, String pathName,
+			String excelName, String suffixName, HashMap<String, String> sheetName,
+			HashMap<String, ArrayList<String>> columnName) {
 		// 创建 Workbook
-		Workbook wb = createExcel(result, suffixName);
+		Workbook wb = createExcel(sheetData, suffixName, sheetName, columnName);
 
 		String fileName = pathName + excelName + "." + suffixName;
 
@@ -46,22 +51,35 @@ public class Excel {
 	/**
 	 * 创建excel文件
 	 * 
-	 * @param result
+	 * @param sheetData
 	 * @param suffixName
+	 * @param sheetName
+	 * @param columnName
 	 * @return
 	 */
-	private Workbook createExcel(ArrayList<Optional<RoomMortgageCashflow>> result, String suffixName) {
+	private Workbook createExcel(HashMap<String, ArrayList<Optional<RoomMortgageCashflow>>> sheetData,
+			String suffixName, HashMap<String, String> sheetName, HashMap<String, ArrayList<String>> columnName) {
 		// 通过 suffixName 获取 WorkBook
 		Workbook wb = getWorkBook(suffixName);
 
 		// 创建 sheet
-		Sheet sheet = createSheet(wb);
+		ArrayList<Sheet> sheets = createSheet(wb, sheetName, columnName);
 
-		// 创建结果值 行列 并赋值
-		createRowAndCellAndSetCellValue(result, sheet);
+		// java 8 Lambda Expression
+		sheets.forEach(sheet -> {
+			String sn = sheet.getSheetName();
+			sheetData.forEach((k, v) -> {
+				String sheetNameValue = sheetName.get(k);
+				if (sheetNameValue.equalsIgnoreCase(sn)) {
+					// 创建结果值 行列 并赋值
+					createRowAndCellAndSetCellValue(v, sheet);
+				}
+			});
 
-		// 设置 sheet列的格式
-		setSheetColumnStyle(sheet);
+			// 设置 sheet列的格式
+			setSheetColumnStyle(sheet);
+
+		});
 
 		return wb;
 	}
@@ -91,23 +109,37 @@ public class Excel {
 	 * 创建sheet
 	 * 
 	 * @param wb
+	 * @param sheetName
+	 * @param columnName
 	 * @return
 	 */
-	private Sheet createSheet(Workbook wb) {
-		// 在webbook中添加一个sheet
-		String safeName = WorkbookUtil.createSafeSheetName("还款现金流");
-		Sheet sheet = wb.createSheet(safeName);
-		// 在sheet中添加表头第0行
-		int rowNum = 0;
-		Row row = sheet.createRow((short) rowNum);
-		// 创建单元格，并设置值表头 设置表头居中
-		CellStyle style = wb.createCellStyle();
-		// 居中格式
-		style.setAlignment(HorizontalAlignment.CENTER);
-		// 设置列名
-		setCellNameAndStyle(row, style);
+	private ArrayList<Sheet> createSheet(Workbook wb, HashMap<String, String> sheetName,
+			HashMap<String, ArrayList<String>> columnName) {
+		ArrayList<Sheet> sheets = new ArrayList<Sheet>();
+		// java 8 Lambda Expression
+		sheetName.forEach((k, v) -> {
+			// 在webbook中添加一个sheet
+			String safeName = WorkbookUtil.createSafeSheetName(v);
+			Sheet sheet = wb.createSheet(safeName);
+			// 在sheet中添加表头第0行
+			int rowNum = 0;
+			Row row = sheet.createRow((short) rowNum);
+			// 创建单元格，并设置值表头 设置表头居中
+			CellStyle style = wb.createCellStyle();
+			// 居中格式
+			style.setAlignment(HorizontalAlignment.CENTER);
+			columnName.forEach((kc, vc) -> {
+				// if (kc.equals(k)) {
+				// if (kc == k) {
+				if (kc.equalsIgnoreCase(k)) {// 比较两个字符串的内容是否相同，忽略大小写
+					// 设置列名
+					setCellNameAndStyle(row, style, vc);
+				}
+			});
+			sheets.add(sheet);
+		});
 
-		return sheet;
+		return sheets;
 	}
 
 	/**
@@ -115,47 +147,31 @@ public class Excel {
 	 * 
 	 * @param row
 	 * @param style
+	 * @param columnNameValue
 	 */
-	private void setCellNameAndStyle(Row row, CellStyle style) {
-		// 设置列名
-		Cell cell = row.createCell(0);
-		cell.setCellValue("还款日");
-		cell.setCellStyle(style);
-		cell = row.createCell(1);
-		cell.setCellValue("应还金额");
-		cell.setCellStyle(style);
-		cell = row.createCell(2);
-		cell.setCellValue("应还本金");
-		cell.setCellStyle(style);
-		cell = row.createCell(3);
-		cell.setCellValue("应还利息");
-		cell.setCellStyle(style);
-		cell = row.createCell(4);
-		cell.setCellValue("已还本金");
-		cell.setCellStyle(style);
-		cell = row.createCell(5);
-		cell.setCellValue("已还利息");
-		cell.setCellStyle(style);
-		cell = row.createCell(6);
-		cell.setCellValue("剩余应还本金");
-		cell.setCellStyle(style);
-		cell = row.createCell(7);
-		cell.setCellValue("已还金额");
-		cell.setCellStyle(style);
+	private void setCellNameAndStyle(Row row, CellStyle style, ArrayList<String> columnNameValue) {
+		int columnNum = 0;
+		for (String cnv : columnNameValue) {
+			// 设置列名
+			Cell cell = row.createCell(columnNum);
+			cell.setCellValue(cnv);
+			cell.setCellStyle(style);
+			columnNum++;
+		}
 	}
 
 	/**
 	 * 传入要导出的值，赋值给对应的行列
 	 * 
-	 * @param result
+	 * @param sheetData
 	 * @param sheet
 	 */
-	private void createRowAndCellAndSetCellValue(ArrayList<Optional<RoomMortgageCashflow>> result, Sheet sheet) {
+	private void createRowAndCellAndSetCellValue(ArrayList<Optional<RoomMortgageCashflow>> sheetData, Sheet sheet) {
 		Row row;
 		// 创建行列，并赋值
-		for (int i = 0; i < result.size(); i++) {
+		for (int i = 0; i < sheetData.size(); i++) {
 			// jdk 8 新特性 Optional
-			Optional<RoomMortgageCashflow> ormc = result.get(i);
+			Optional<RoomMortgageCashflow> ormc = sheetData.get(i);
 			// 检查Optional类型对象是否有值
 			if (ormc.isPresent()) {
 				// 获取对象
@@ -181,9 +197,14 @@ public class Excel {
 	 * @param sheet
 	 */
 	private void setSheetColumnStyle(Sheet sheet) {
-		// 设置自动列大小
+		
 		for (short i = sheet.getRow(0).getFirstCellNum(), end = sheet.getRow(0).getLastCellNum(); i < end; i++) {
+			// 设置自动列大小
 			sheet.autoSizeColumn(i);
+			// 设置列头的过滤
+			CellRangeAddress ca = new CellRangeAddress(0, sheet.getLastRowNum(), sheet.getRow(0).getFirstCellNum(),
+					sheet.getRow(0).getLastCellNum()-1);
+			sheet.setAutoFilter(ca);
 		}
 	}
 

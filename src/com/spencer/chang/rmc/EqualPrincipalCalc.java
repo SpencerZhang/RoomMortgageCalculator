@@ -34,7 +34,8 @@ public class EqualPrincipalCalc {
 		BigDecimal discountRate = rm.getDiscountRate();
 		// 年利率上浮
 		BigDecimal floatRate = rm.getFloatRate();
-		ArrayList<Optional<RoomMortgageCashflow>> al = calc(mortgagePrincipal, totalMonth, rate, discountRate, floatRate);
+		ArrayList<Optional<RoomMortgageCashflow>> al = calc(mortgagePrincipal, totalMonth, rate, discountRate,
+				floatRate);
 		return al;
 	}
 
@@ -53,8 +54,8 @@ public class EqualPrincipalCalc {
 	 *            上浮
 	 * @return 抵押贷款现金流数组
 	 */
-	private ArrayList<Optional<RoomMortgageCashflow>> calc(BigDecimal mortgagePrincipal, int totalMonth, BigDecimal rate,
-			BigDecimal discountRate, BigDecimal floatRate) {
+	private ArrayList<Optional<RoomMortgageCashflow>> calc(BigDecimal mortgagePrincipal, int totalMonth,
+			BigDecimal rate, BigDecimal discountRate, BigDecimal floatRate) {
 		// 已还本金
 		BigDecimal paidPrincipal = BigDecimal.ZERO;
 		// 已还利息
@@ -74,24 +75,28 @@ public class EqualPrincipalCalc {
 
 		ArrayList<Optional<RoomMortgageCashflow>> al = new ArrayList<Optional<RoomMortgageCashflow>>();
 		for (int i = 1; i <= totalMonth; i++) {
-			// 最后一个月的本金(倒减法)= 总金额-已还总金额
-			if (i == totalMonth)
-				dueMonthPrincipal = mortgagePrincipal.subtract(paidPrincipal);
-			paidPrincipal = paidPrincipal.add(dueMonthPrincipal);
-			// 剩余本金 = 抵押贷款总额 - 已还本金
-			remainingPrincipal = mortgagePrincipal.subtract(paidPrincipal);
-			// 最后一个月的剩余本金为0
-			if (i == totalMonth)
-				remainingPrincipal = BigDecimal.ZERO;
 			// 每月应还利息
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthPrincipal, monthRate, i);
-
-			paidInterset = paidInterset.add(dueMonthInterset);
+			
+			// 最后一个月的本金(倒减法)= 总金额-已还总金额
+			if (i == totalMonth) {
+				dueMonthPrincipal = mortgagePrincipal.subtract(paidPrincipal);
+				// 最后一个月的剩余本金为0
+				remainingPrincipal = BigDecimal.ZERO;
+			}
 
 			// 每月还款额 = 每月应还本金 + 每月应还利息,保留2位小数
 			BigDecimal dueMonthAmount = dueMonthPrincipal.add(dueMonthInterset).setScale(2, BigDecimal.ROUND_DOWN);
-			// 已还款总额
-			paidAmount = paidAmount.add(dueMonthAmount);
+
+			if (i > 1) {
+				paidPrincipal = paidPrincipal.add(dueMonthPrincipal);
+				if(i != totalMonth)
+					// 剩余本金 = 抵押贷款总额 - 已还本金
+					remainingPrincipal = mortgagePrincipal.subtract(paidPrincipal);
+				// 已还款总额
+				paidAmount = paidAmount.add(dueMonthAmount);
+				paidInterset = paidInterset.add(dueMonthInterset);
+			}
 
 			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i,
 					dueMonthInterset, dueMonthAmount);
@@ -116,7 +121,7 @@ public class EqualPrincipalCalc {
 	 */
 	private void setRMC(BigDecimal paidPrincipal, BigDecimal paidInterset, BigDecimal remainingPrincipal,
 			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<Optional<RoomMortgageCashflow>> al, int i,
-			 BigDecimal dueMonthInterset, BigDecimal dueMonthAmount) {
+			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount) {
 		// 创建计划还款现金流对象
 		RoomMortgageCashflow rmc = new RoomMortgageCashflow();
 		// 还款日期
@@ -125,7 +130,7 @@ public class EqualPrincipalCalc {
 			rmc.setDueDate(dueDate);
 		else
 			rmc.setDueDate(DateUtil.addMonths(DateUtil.getDate(dueDate), i - 1));
-		
+
 		rmc.setDueMonthAmount(dueMonthAmount.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthInterset(dueMonthInterset.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setDueMonthPrincipal(dueMonthPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
@@ -133,7 +138,7 @@ public class EqualPrincipalCalc {
 		rmc.setPaidPrincipal(paidPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setRemainingPrincipal(remainingPrincipal.setScale(2, BigDecimal.ROUND_DOWN));
 		rmc.setPaidAmount(paidAmount.setScale(2, BigDecimal.ROUND_DOWN));
-		
+
 		Optional<RoomMortgageCashflow> or = Optional.of(rmc);
 		al.add(or);
 	}
