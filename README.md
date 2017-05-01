@@ -68,7 +68,7 @@ public class ExcelTest {
 		columnName.put("sheet0", columnNameValue);
 		columnName.put("sheet1", columnNameValue);
 
-		// xls 等额本金/等额本息 生成在一个文件，不童sheet页
+		// xls 等额本金/等额本息 生成在一个文件，不同sheet页
 		String pathName = "./";
 		// 等额本金
 		epcResult = epc.getEqualPrincipal(rm);
@@ -80,7 +80,7 @@ public class ExcelTest {
 		sheetData.put("sheet1", epicResult);
 		excel.exportExcel(sheetData, pathName, epcExeclName, epcsuffixName, sheetName, columnName);
 
-		// xlsx 等额本金/等额本息 生成在一个文件，不童sheet页
+		// xlsx 等额本金/等额本息 生成在一个文件，不同sheet页
 		String epcExeclName4xlsx = "还款现金流";
 		String epcsuffixName4xlsx = "xlsx";
 		excel.exportExcel(sheetData, pathName, epcExeclName4xlsx, epcsuffixName4xlsx, sheetName, columnName);
