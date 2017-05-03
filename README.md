@@ -1,6 +1,6 @@
 # RMC - 房屋抵押贷款计算器
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/SpencerZhang/RoomMortgageCalculator/LICENSE.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/SpencerZhang/RoomMortgageCalculator/blob/master/LICENSE.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/SpencerZhang/RoomMortgageCalculator/pulls)
 [![GitHub stars](https://img.shields.io/github/stars/SpencerZhang/RoomMortgageCalculator.svg?style=social&label=Stars)](https://github.com/SpencerZhang/RoomMortgageCalculator)
 [![GitHub forks](https://img.shields.io/github/forks/SpencerZhang/RoomMortgageCalculator.svg?style=social&label=Fork)](https://github.com/SpencerZhang/RoomMortgageCalculator)
