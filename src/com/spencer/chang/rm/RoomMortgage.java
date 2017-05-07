@@ -20,15 +20,17 @@ public class RoomMortgage implements Serializable {
 	public BigDecimal discountRate; // 贷款利率,折扣
 	public BigDecimal floatRate; // 贷款利率,上浮
 	public int year; // 贷款年限
+	public String dueDate;// 还款日期
 
 	public RoomMortgage(BigDecimal mortgagePrincipal, BigDecimal rate, BigDecimal discountRate, BigDecimal floatRate,
-			int year) {
+			int year, String dueDate) {
 		super();
 		this.mortgagePrincipal = mortgagePrincipal;
 		this.rate = rate;
 		this.discountRate = discountRate;
 		this.floatRate = floatRate;
 		this.year = year;
+		this.dueDate = dueDate;
 	}
 
 	public BigDecimal getMortgagePrincipal() {
@@ -71,11 +73,20 @@ public class RoomMortgage implements Serializable {
 		this.year = year;
 	}
 
+	public String getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(String dueDate) {
+		this.dueDate = dueDate;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((discountRate == null) ? 0 : discountRate.hashCode());
+		result = prime * result + ((dueDate == null) ? 0 : dueDate.hashCode());
 		result = prime * result + ((floatRate == null) ? 0 : floatRate.hashCode());
 		result = prime * result + ((mortgagePrincipal == null) ? 0 : mortgagePrincipal.hashCode());
 		result = prime * result + ((rate == null) ? 0 : rate.hashCode());
@@ -96,6 +107,11 @@ public class RoomMortgage implements Serializable {
 			if (other.discountRate != null)
 				return false;
 		} else if (!discountRate.equals(other.discountRate))
+			return false;
+		if (dueDate == null) {
+			if (other.dueDate != null)
+				return false;
+		} else if (!dueDate.equals(other.dueDate))
 			return false;
 		if (floatRate == null) {
 			if (other.floatRate != null)
@@ -120,6 +136,7 @@ public class RoomMortgage implements Serializable {
 	@Override
 	public String toString() {
 		return "RoomMortgage [mortgagePrincipal=" + mortgagePrincipal + ", rate=" + rate + ", discountRate="
-				+ discountRate + ", floatRate=" + floatRate + ", year=" + year + "]";
+				+ discountRate + ", floatRate=" + floatRate + ", year=" + year + ", dueDate=" + dueDate + "]";
 	}
+
 }

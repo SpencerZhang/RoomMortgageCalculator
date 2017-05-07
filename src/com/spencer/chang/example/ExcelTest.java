@@ -16,7 +16,7 @@ public class ExcelTest {
 		EqualPrincipalCalc epc = new EqualPrincipalCalc();
 		EqualPrincipalInterestCalc epic = new EqualPrincipalInterestCalc();
 
-		// 抵押贷款本金39万，利率5.5256%，利率折扣无，利率上浮无，贷款年限30年
+		// 抵押贷款本金39万，利率5.5256%，利率折扣无，利率上浮无，贷款年限30年，还款日每月9号
 		// 当从前端传入的利率或者利率折扣或者利率上浮出入的是Double，初始化BigDecimal,值会不等传入的值。
 		// 这是应该使用String类型，初始化BigDecimal
 		// 例如：
@@ -29,7 +29,7 @@ public class ExcelTest {
 		// 5.5256
 		// 传入的参数有关金额字段定义为String类型，全部使用BigDecimal(String)初始化。保证精确计算
 		RoomMortgage rm = new RoomMortgage(new BigDecimal("390000"),
-				new BigDecimal("5.5256").setScale(4, BigDecimal.ROUND_DOWN), null, null, 30);
+				new BigDecimal("5.5256").setScale(4, BigDecimal.ROUND_DOWN), null, null, 30,"2017-05-09");
 
 		// 为了规避NullPointerExceptions，使用jdk 8 新特性 Optional
 		ArrayList<Optional<RoomMortgageCashflow>> epcResult = new ArrayList<Optional<RoomMortgageCashflow>>();

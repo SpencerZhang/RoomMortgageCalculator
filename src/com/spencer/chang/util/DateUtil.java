@@ -37,14 +37,14 @@ public class DateUtil {
 
 	public static String addMonths(Date date, int n) {
 		String dueDate = null;
-		if (PlatformJavaVersion.javaVersion() == 8) {
-			dueDate = LocalDate.now().plusMonths(n).toString();
-		} else {
+//		if (PlatformJavaVersion.javaVersion() == 8) {
+//			dueDate = LocalDate.now().plusMonths(n).toString();
+//		} else {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
 			cal.add(Calendar.MONTH, n);// 加n月
 			dueDate = new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
-		}
+//		}
 		return dueDate;
 	}
 

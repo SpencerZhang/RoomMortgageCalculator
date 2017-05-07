@@ -34,8 +34,11 @@ public class EqualPrincipalCalc {
 		BigDecimal discountRate = rm.getDiscountRate();
 		// 年利率上浮
 		BigDecimal floatRate = rm.getFloatRate();
+		// 还款日
+		String dueDate = rm.getDueDate();
+
 		ArrayList<Optional<RoomMortgageCashflow>> al = calc(mortgagePrincipal, totalMonth, rate, discountRate,
-				floatRate);
+				floatRate, dueDate);
 		return al;
 	}
 
@@ -55,7 +58,7 @@ public class EqualPrincipalCalc {
 	 * @return 抵押贷款现金流数组
 	 */
 	private ArrayList<Optional<RoomMortgageCashflow>> calc(BigDecimal mortgagePrincipal, int totalMonth,
-			BigDecimal rate, BigDecimal discountRate, BigDecimal floatRate) {
+			BigDecimal rate, BigDecimal discountRate, BigDecimal floatRate, String dueDate) {
 		// 已还本金
 		BigDecimal paidPrincipal = BigDecimal.ZERO;
 		// 已还利息
@@ -77,7 +80,7 @@ public class EqualPrincipalCalc {
 		for (int i = 1; i <= totalMonth; i++) {
 			// 每月应还利息
 			BigDecimal dueMonthInterset = getDueMonthInterset(mortgagePrincipal, dueMonthPrincipal, monthRate, i);
-			
+
 			// 最后一个月的本金(倒减法)= 总金额-已还总金额
 			if (i == totalMonth) {
 				dueMonthPrincipal = mortgagePrincipal.subtract(paidPrincipal);
@@ -90,7 +93,7 @@ public class EqualPrincipalCalc {
 
 			if (i > 1) {
 				paidPrincipal = paidPrincipal.add(dueMonthPrincipal);
-				if(i != totalMonth)
+				if (i != totalMonth)
 					// 剩余本金 = 抵押贷款总额 - 已还本金
 					remainingPrincipal = mortgagePrincipal.subtract(paidPrincipal);
 				// 已还款总额
@@ -99,7 +102,7 @@ public class EqualPrincipalCalc {
 			}
 
 			setRMC(paidPrincipal, paidInterset, remainingPrincipal, dueMonthPrincipal, paidAmount, al, i,
-					dueMonthInterset, dueMonthAmount);
+					dueMonthInterset, dueMonthAmount, dueDate);
 		}
 		return al;
 	}
@@ -121,11 +124,11 @@ public class EqualPrincipalCalc {
 	 */
 	private void setRMC(BigDecimal paidPrincipal, BigDecimal paidInterset, BigDecimal remainingPrincipal,
 			BigDecimal dueMonthPrincipal, BigDecimal paidAmount, ArrayList<Optional<RoomMortgageCashflow>> al, int i,
-			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount) {
+			BigDecimal dueMonthInterset, BigDecimal dueMonthAmount, String dueDate) {
 		// 创建计划还款现金流对象
 		RoomMortgageCashflow rmc = new RoomMortgageCashflow();
-		// 还款日期
-		String dueDate = DateUtil.getDate();
+		// 还款日期 修改为入口传入,判断是否为null，否则取当前日期
+		dueDate = dueDate == null ? DateUtil.getDate() : dueDate;
 		if (i == 1)
 			rmc.setDueDate(dueDate);
 		else
